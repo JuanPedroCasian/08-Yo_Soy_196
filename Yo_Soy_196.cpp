@@ -7,6 +7,7 @@ Juan Casian
 #include <iostream>
 #include <string>
 #include "BigIntegerLibrary.hh"
+#include <vector>
 
 using namespace std;
 
@@ -46,34 +47,67 @@ BoundaryPair AskForValue() {
   return FirstPair;
 }
 
-void CheckTheValues (BoundaryPair FirstPair){
+bool CheckPalindrome (BigInteger& CurrentNumber){
+  string TestValue = bigIntegerToString(CurrentNumber);     //Using the function bigIntegerToString () to be able to swith it backwards
+  string TestValueVolteado = string(TestValue.rbegin(), TestValue.rend()); //This is how you turn backwards a string
 
-   int PalyndromesCounter = 0;
+  if (TestValue == TestValueVolteado){        // looking for the plindrom
+    return true;
+  } else {
+    return false;
+  }
+}
 
-  for (;FirstPair.LowerBound <= FirstPair.UpperBound; FirstPair.LowerBound++){
+bool CheckNonLycherel (BigInteger CurrentNumber){
+  BigInteger TestNumber, TestNumberVolteado;
+  string TestValue, TestValueVolteado;              /*
+                                                      A non lycherel number is a number that is not a palindrome but it is switched and added to the
+                                                      normal number will give a palindrome
 
+                                                      This function switches the number checks if they are equal if not, it adds them and checks again
+                                                    */
 
-    string LowerBound = bigIntegerToString(FirstPair.LowerBound);
-    string UpperBound = bigIntegerToString(FirstPair.UpperBound);
-    string Volteado = string(LowerBound.rbegin(), LowerBound.rend());
-    /*
-    cout << LowerBound <<endl;          Test to see if the program inverted the string order
-    string Volteado = string(LowerBound.rbegin(), LowerBound.rend());     Con esto volteas los strings.
-    cout << Volteado << endl;
-    */
+  for (int i=1; i <= 30; i++){
+    TestValue = bigIntegerToString(CurrentNumber);
+    TestValueVolteado = string(TestValue.rbegin(), TestValue.rend());
 
-
-    if (LowerBound == Volteado){
-      PalyndromesCounter = PalyndromesCounter +1;
+    if (TestValue == TestValueVolteado){
+      return true;
+    } else {
+      TestNumber = stringToBigInteger(TestValue);     //Turns the value back to BigInteger so you are able to add them
+      TestNumberVolteado = stringToBigInteger(TestValueVolteado);
+      CurrentNumber = TestNumber + TestNumberVolteado;
     }
+  }
+  return false;         // If the process before does not gives a palindrome then it is a lycherel and by returning false you let the CheckTheValues function know
+}
 
-    if ()
+void CheckTheValues (BoundaryPair FirstPair){
+  BigInteger CurrentNumber = FirstPair.LowerBound;
+  int PalinCounter = 0, NonLycheCounter = 0, LycheCounter = 0;
+  vector <BigInteger> Palindromes;
+  int IDVector = 0;
 
-
-
+  for (;CurrentNumber <= FirstPair.UpperBound; CurrentNumber ++){
+    if (CheckPalindrome(CurrentNumber) == true){    //simple counter
+      PalinCounter +=1;
+    } else if (CheckNonLycherel(CurrentNumber) == true){
+      NonLycheCounter +=1;
+    } else if (CheckNonLycherel(CurrentNumber) == false){
+      LycheCounter +=1;
+      Palindromes.push_back(CurrentNumber);     // When a number is a palindrome it stores it in a Vector
+      IDVector +=1;   //IDVector works to know how many values do you have so you can print them later
+    }
   }
 
-  cout << PalyndromesCounter << endl;
+  cout << "Number of Palindromes: " << PalinCounter << endl;
+  cout << "Number of NonLycherels candidates: " << NonLycheCounter << endl;
+  cout << "Number of Lycherel candidates: " << LycheCounter << endl;
+
+  cout << "The Lycherel candidates found are: " << endl;
+  for (int i = 0; i < IDVector; i++){     //Here is where IDVector comes in Handy
+    cout << Palindromes[i] << endl;
+  }
 
 }
 
@@ -92,6 +126,7 @@ int main () {
 
 CheckTheValues(FirstPair);
 
+cout << "FINALLY WE MADE IT!!!!!" << endl;
 
 }
 
